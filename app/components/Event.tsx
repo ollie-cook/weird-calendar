@@ -13,6 +13,7 @@ interface EventProps {
 }
 
 export default function Event(props: EventProps) {
+
   const divRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export default function Event(props: EventProps) {
 
       return newEvents
     })
+
   }
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -72,30 +74,49 @@ export default function Event(props: EventProps) {
   const handleDelete = () => {
     props.setEvents((prev: EventType[]) => {
       const newEvents = [...prev];
+      const index = newEvents.findIndex((event) => event.id === props.event.id);
+
+      let diffx = 0;
+      if (newEvents.length > 1) {
+        diffx = Number(newEvents[1].initialX) - Number(newEvents[0].initialX);
+      }
       console.log(newEvents)
 
-      const index = newEvents.findIndex((event) => event.id === props.event.id);
-      console.log(index)
+
+      newEvents.forEach((event, i) => {
+        if (i > index) {
+          console.log('were in' + i)
+          console.log(event.initialX)
+          console.log((Number(event.x) - diffx).toString())
+          event.x = (Number(event.x) + diffx).toString();
+        }
+      })
+
+      console.log(newEvents)
 
       newEvents.splice(index, 1);
-      console.log(newEvents)
 
 
       return newEvents
     })
   }
 
-  const defaultX = parseInt(props.event.x) - parseInt(props.event.initialX);
-  const defaultY = parseInt(props.event.y) - parseInt(props.event.initialY);
-  console.log(props.event.x, props.event.y)
-  console.log(defaultX, defaultY)
-
+  const defaultX = Number(props.event.x) - Number(props.event.initialX);
+  const defaultY = Number(props.event.y) - Number(props.event.initialY);
   return (
     <Draggable
       onStop={(e) => handleStop(e)}
-      defaultPosition={{ x: defaultX, y: defaultY}}
+      defaultPosition={{ x: defaultX, y: defaultY }}
     >
-      <div ref={divRef} className="w-[10vw] aspect-[1.5] p-1" style={{backgroundColor: props.event.colour}}>
+      <div 
+        ref={divRef} 
+        className="w-[10vw] aspect-[1.5] p-1" 
+        style={{
+          backgroundColor: props.event.colour,
+          top: 0
+        }}
+
+      >
         <form className="flex flex-col justify-stretch h-full">
           <input 
             type="text" 
@@ -123,3 +144,5 @@ export default function Event(props: EventProps) {
 
 //defaultPosition={{ x: parseInt(props.event.x), y: parseInt(props.event.y) }}
 //defaultPosition={{ x: parseInt(props.event.x) - parseInt(props.event.initialX), y: parseInt(props.event.y) - parseInt(props.event.initialY) }}
+
+//onDrag={(e, data) => setPosition({x: data.x, y: data.y})}
