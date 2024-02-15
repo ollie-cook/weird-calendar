@@ -7,6 +7,7 @@ export type EventType = {
   initialX: string;
   initialY: string;
   initialsSet: boolean;
+  colour: string;
 }
 
 export type DraggableData = {
